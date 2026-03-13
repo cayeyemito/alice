@@ -1,0 +1,236 @@
+  /* =========================
+    ESCENA
+  ========================= */
+  .story2-scene {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* =========================
+    LUZ DE VELA
+  ========================= */
+  .candle-light {
+    position: absolute;
+    inset: -35%;
+    background: radial-gradient(
+      circle at 52% 48%,
+      rgba(255, 215, 160, 0.55) 0%,
+      rgba(255, 185, 95, 0.38) 16%,
+      rgba(140, 85, 35, 0.28) 28%,
+      rgba(0, 0, 0, 0.92) 42%,
+      #050402 60%
+    );
+    pointer-events: none;
+    z-index: 5;
+    filter: blur(6px);
+    animation: candleFlicker 7s ease-in-out infinite;
+  }
+
+  @keyframes candleFlicker {
+    0% {
+      opacity: 0.92;
+      transform: scale(1) translate(0, 0);
+    }
+
+    10% {
+      opacity: 0.98;
+      transform: scale(1.02) translate(-0.25%, -0.15%);
+    }
+
+    22% {
+      opacity: 0.88;
+      transform: scale(0.99) translate(0.3%, 0.2%);
+    }
+
+    34% {
+      opacity: 1;
+      transform: scale(1.04) translate(-0.35%, 0.15%);
+    }
+
+    48% {
+      opacity: 0.9;
+      transform: scale(1) translate(0.15%, -0.1%);
+    }
+
+    60% {
+      opacity: 0.96;
+      transform: scale(1.025) translate(-0.2%, 0.1%);
+    }
+
+    74% {
+      opacity: 0.88;
+      transform: scale(0.985) translate(0.25%, -0.2%);
+    }
+
+    88% {
+      opacity: 0.97;
+      transform: scale(1.015) translate(-0.15%, 0.1%);
+    }
+
+    100% {
+      opacity: 0.92;
+      transform: scale(1) translate(0, 0);
+    }
+  }
+
+  /* =========================
+    CONTENEDOR DEL LIBRO
+  ========================= */
+  .book-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    z-index: 2;
+  }
+
+  .book-visual {
+    position: relative;
+    width: min(94vw, 1200px);
+    display: flex;
+    justify-content: center;
+  }
+
+  .dark-veil {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    z-index: 6;
+    pointer-events: none; /* 👈 CLAVE */
+    animation: darknessLift 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes darknessLift {
+    0% {
+      opacity: 1;
+    }
+    30% {
+      opacity: 0.9;
+    }
+    55% {
+      opacity: 0.45;
+    }
+    75% {
+      opacity: 0.15;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* =========================
+    IMAGEN DEL LIBRO
+  ========================= */
+  .book-frame {
+    width: 100%;
+    max-height: 92vh;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.35s ease-in-out;
+    cursor: default;
+    user-select: none;
+  }
+
+  .book-frame.clickable {
+    cursor: pointer;
+  }
+
+  /* Visible (ESTO ES LO IMPORTANTE) */
+  .book-frame.closed,
+  .book-frame.opening1,
+  .book-frame.opening2,
+  .book-frame.firstpage,
+  .book-frame.opening3,
+  .book-frame.open {
+    opacity: 1;
+  }
+
+  .book-text-panel {
+    position: absolute;
+    top: 20.5%;
+    left: 56%;
+    width: 33%;
+    min-height: 48%;
+    max-height: 58%;
+    padding: 18px 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #2b1b10;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 245, 220, 0.12) 0%,
+      rgba(255, 245, 220, 0.04) 100%
+    );
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+  }
+
+  .book-frame.firstpage ~ .book-text-panel,
+  .book-frame.opening3 ~ .book-text-panel,
+  .book-frame.open ~ .book-text-panel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .book-text-title {
+    margin: 0;
+    font-size: clamp(1rem, 1.4vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .book-text-body {
+    margin: 0;
+    font-size: clamp(0.75rem, 1vw, 1.1rem);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .book-hint {
+    color: rgba(255, 245, 215, 0.92);
+    font-size: clamp(0.82rem, 1.15vw, 1.05rem);
+    letter-spacing: 0.015em;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  @media (max-width: 900px) {
+    .book-text-panel {
+      top: 22%;
+      left: 55%;
+      width: 36%;
+      min-height: 44%;
+      padding: 12px;
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .book-container {
+      gap: 8px;
+    }
+
+    .book-visual {
+      width: min(98vw, 800px);
+    }
+
+    .book-text-panel {
+      top: 24%;
+      left: 54%;
+      width: 38%;
+      min-height: 40%;
+      max-height: 52%;
+      padding: 9px;
+    }
+  }

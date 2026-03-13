@@ -1,0 +1,60 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.film,
+.effect,
+.grain {
+  position: absolute;
+  inset: 0;
+}
+
+.film::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background: repeating-linear-gradient(
+    90deg,
+    #0002 0 2px,
+    transparent 4px 37vmin
+  );
+  animation: film 0.4s steps(1) infinite;
+}
+
+.effect::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  animation: effect 2s infinite;
+}
+
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: -5%;
+  opacity: 0.25;
+  background-image:
+    repeating-conic-gradient(#000 0%, transparent .00003%),
+    repeating-conic-gradient(#000 0%, transparent .00005%);
+  animation: grain 0.5s steps(1) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0); }
+  50% { transform: translate(-2%, -2%); }
+}
+
+@keyframes film {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-2%); }
+}
+
+@keyframes effect {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(30%); }
+}
