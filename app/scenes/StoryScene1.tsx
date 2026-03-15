@@ -16,7 +16,7 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
   const [visibleChars, setVisibleChars] = useState(0);
   const exitedRef = useRef(false);
 
-  const [videoSrc, setVideoSrc] = useState("/videos/scene1.mp4");
+  const [videoSrc, setVideoSrc] = useState("/videos/Scene1.mp4");
   const [isFinal, setIsFinal] = useState(false);
   const [freezeFrame, setFreezeFrame] = useState<string | null>(null);
 
