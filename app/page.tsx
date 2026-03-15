@@ -14,17 +14,22 @@ type Scene =
   | "black-to-story2"
   | "story2";
 
+const STORY_FLOW: ReadonlyArray<Extract<Scene, "title" | "story1" | "story2">> = [
+  "title",
+  "story1",
+  "story2",
+];
+
 export default function HomePage() {
   const [scene, setScene] = useState<Scene>("title");
-  const STORY_FLOW = ["title", "story1", "story2"] as const;
   const { setProgress } = useSceneProgress();
 
   useEffect(() => {
-    const index = STORY_FLOW.indexOf(scene as any);
+    const index = STORY_FLOW.indexOf(scene as (typeof STORY_FLOW)[number]);
     if (index !== -1) {
       setProgress((index + 1) / STORY_FLOW.length);
     }
-  }, [scene]);
+  }, [scene, setProgress]);
 
   useEffect(() => {
     if (scene === "black-to-story1") {

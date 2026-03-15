@@ -65,6 +65,7 @@
 }
 
 .wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -146,5 +147,70 @@
 
   100% {
     clip-path: inset(0 0 0 0);
+  }
+}
+
+.soundCue {
+  position: absolute;
+  right: clamp(18px, 4vw, 52px);
+  bottom: clamp(18px, 4vh, 42px);
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.soundCueCore,
+.soundCueRing,
+.soundCueRingDelay {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.soundCueCore {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #fff5d6 0%, #f2c777 72%, #c38536 100%);
+  box-shadow:
+    0 0 12px rgba(255, 227, 165, 0.9),
+    0 0 26px rgba(214, 148, 64, 0.48);
+  animation: cueGlow 1.8s ease-in-out infinite;
+}
+
+.soundCueRing,
+.soundCueRingDelay {
+  inset: 0;
+  border: 1px solid rgba(255, 225, 168, 0.42);
+  animation: cueRipple 2.4s ease-out infinite;
+}
+
+.soundCueRingDelay {
+  animation-delay: 1.2s;
+}
+
+@keyframes cueGlow {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.82;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes cueRipple {
+  0% {
+    transform: scale(0.45);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.78;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
   }
 }

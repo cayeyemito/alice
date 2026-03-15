@@ -10,12 +10,12 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
   const [phase, setPhase] = useState<Phase>("clouds");
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  const CHAPTER_TEXT = "CHAPTER I";
+  const CHAPTER_TEXT = "AQUI COMIENZA";
   const [visibleChars, setVisibleChars] = useState(0);
-  const exitedRef = useRef(false);;
+  const exitedRef = useRef(false);
 
-  // vídeo actual
   const [videoSrc, setVideoSrc] = useState("/videos/scene1.mp4");
   const [isFinal, setIsFinal] = useState(false);
   const [freezeFrame, setFreezeFrame] = useState<string | null>(null);
@@ -24,50 +24,64 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
   const [isHolding, setIsHolding] = useState(false);
   const [hideChapter, setHideChapter] = useState(false);
   const [finalReady, setFinalReady] = useState(false);
-  const HOLD_SPEED = 0.01;
-  const holdingRef = useRef(false);
-  const rafRef = useRef<number | null>(null);
   const [darkness, setDarkness] = useState(0);
   const [finished, setFinished] = useState(false);
+  const holdingRef = useRef(false);
 
-  /* 1️⃣ A los 3.5s → pasar a covered (el vídeo ya puede existir) */
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setPhase("covered");
     }, 3500);
 
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, []);
 
-  /* 2️⃣ Arrancar el vídeo cuando toca */
   useEffect(() => {
-    if (phase === "covered" && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play();
-    }
+    if (phase !== "covered") return;
+
+    const video = videoRef.current;
+    const audio = audioRef.current;
+    if (!video || !audio) return;
+
+    video.currentTime = 0;
+    void video.play().catch(() => {});
+
+    audio.volume = 0.45;
+    audio.currentTime = 0;
+    void audio.play().catch(() => {});
   }, [phase]);
+
+  useEffect(() => {
+    return () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, []);
 
   useEffect(() => {
     const onVisibilityChange = () => {
       const video = videoRef.current;
-      if (!video) return;
+      const audio = audioRef.current;
+      if (!video || !audio) return;
 
       if (document.hidden) {
-        // 🔒 El navegador va a pausar sí o sí → lo hacemos nosotros primero
         video.pause();
+        audio.pause();
         holdingRef.current = false;
         setIsHolding(false);
+      } else if (phase !== "clouds" && !finished) {
+        void audio.play().catch(() => {});
       }
     };
 
     document.addEventListener("visibilitychange", onVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, []);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [finished, phase]);
 
-  /* 3️⃣ Animación del texto sincronizada con el vídeo */
   useEffect(() => {
-    if (phase === "clouds" || isFinal) return; // 👈 CLAVE
+    if (phase === "clouds" || isFinal) return;
 
     const video = videoRef.current;
     if (!video) return;
@@ -75,7 +89,7 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
     const onTimeUpdate = () => {
-      if (!video.duration || isNaN(video.duration)) return;
+      if (!video.duration || Number.isNaN(video.duration)) return;
 
       const progress = easeOutCubic(video.currentTime / video.duration);
       const chars = Math.floor(progress * CHAPTER_TEXT.length);
@@ -105,23 +119,19 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
     if (finished) return;
     if (!waitingForHold || !finalReady) return;
 
-    const v = videoRef.current;
-    if (!v) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-    // 🔑 1. Play primero (gesto puro)
-    const playPromise = v.play();
+    const playPromise = video.play();
 
     if (playPromise !== undefined) {
       playPromise
-      .then(() => {
-        setHideChapter(true);
-        setIsHolding(true);
-        setFreezeFrame(null);
-      })
-      .catch(() => {
-        // ❗ NO HACER NADA
-        // El navegador lo bloqueó por energía / visibilidad
-      });
+        .then(() => {
+          setHideChapter(true);
+          setIsHolding(true);
+          setFreezeFrame(null);
+        })
+        .catch(() => {});
     }
   };
 
@@ -136,16 +146,16 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
     if (!isFinal || finished) return;
 
     const video = videoRef.current;
-    if (!video) return;
+    const audio = audioRef.current;
+    if (!video || !audio) return;
 
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       if (!video.duration) return;
       if (exitedRef.current) return;
 
       const progress = video.currentTime / video.duration;
       const remaining = video.duration - video.currentTime;
 
-      // oscuridad progresiva
       setDarkness(Math.pow(progress, 1.6));
 
       if (remaining <= 0.15) {
@@ -156,14 +166,16 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
         setIsHolding(false);
 
         video.pause();
+        audio.pause();
+        audio.currentTime = 0;
         video.currentTime = video.duration;
 
-        setTimeout(onExit, 300);
+        window.setTimeout(onExit, 300);
       }
-    }, 50); // 👈 MUY IMPORTANTE: independiente del play/pause
+    }, 50);
 
-    return () => clearInterval(interval);
-  }, [isFinal, finished, onExit]);
+    return () => window.clearInterval(interval);
+  }, [finished, isFinal, onExit]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -189,7 +201,7 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [isHolding, startHold, endHold]);
+  }, [isHolding]);
 
   return (
     <div
@@ -201,40 +213,30 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
       onTouchStart={startHold}
       onTouchEnd={endHold}
     >
-      <div
-        className="darkness-overlay"
-        style={{ opacity: darkness }}
-      />
+      <audio ref={audioRef} src="/audio/Sunnyday.mp3" preload="auto" loop />
+
+      <div className="darkness-overlay" style={{ opacity: darkness }} />
+
       {(phase === "covered" || phase === "play") && (
         <div className={`chapter-overlay ${hideChapter ? "chapter-hide" : ""}`}>
           <div className="chapter-wrap">
             <h1 className="chapter-title">
               {CHAPTER_TEXT.split("").map((char, i) => (
-                <span
-                  key={i}
-                  className={`char ${i < visibleChars ? "visible" : ""}`}
-                >
+                <span key={i} className={`char ${i < visibleChars ? "visible" : ""}`}>
                   {char === " " ? "\u00A0" : char}
                 </span>
               ))}
             </h1>
 
-            <p className="chapter-subtitle">
-              On a Summer’s Day
-            </p>
+            <p className="chapter-subtitle">En un dia de verano</p>
           </div>
         </div>
       )}
 
-      {/* Overlay con el último frame congelado */}
       {freezeFrame && (
-        <div
-          className="video-freeze"
-          style={{ backgroundImage: `url(${freezeFrame})` }}
-        />
+        <div className="video-freeze" style={{ backgroundImage: `url(${freezeFrame})` }} />
       )}
 
-      {/* Vídeo */}
       <div className="video-layer">
         {(phase === "covered" || phase === "play") && (
           <video
@@ -244,17 +246,16 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
             playsInline
             preload="auto"
             className="story-video"
-           onLoadedMetadata={() => {
-            if (!isFinal) return;
+            onLoadedMetadata={() => {
+              if (!isFinal) return;
 
-            const v = videoRef.current;
-            if (!v) return;
+              const video = videoRef.current;
+              if (!video) return;
 
-            v.currentTime = 0;
-            v.playbackRate = 1.5;
-            // ❌ v.pause();  ← ELIMINAR
-            setFinalReady(true);
-          }}
+              video.currentTime = 0;
+              video.playbackRate = 1.5;
+              setFinalReady(true);
+            }}
             onEnded={() => {
               if (!isFinal) {
                 captureLastFrame();
@@ -266,23 +267,16 @@ export default function StoryScene1({ onExit }: { onExit: () => void }) {
                   videoRef.current?.load();
                 });
               }
-              // 👈 NO onExit aquí
             }}
           />
         )}
       </div>
 
-      {/* Texto de pista */}
       {waitingForHold && !isHolding && (
-       <div className={`hold-hint ${isHolding ? "holding" : ""}`}>
-          Mantén pulsada la pantalla
-        </div>
+        <div className={`hold-hint ${isHolding ? "holding" : ""}`}>Mantén pulsada la pantalla</div>
       )}
 
-      {phase !== "play" && (
-        <CloudTransition onComplete={() => setPhase("play")} />
-      )}
-
+      {phase !== "play" && <CloudTransition onComplete={() => setPhase("play")} />}
     </div>
   );
 }

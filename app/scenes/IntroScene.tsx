@@ -12,33 +12,39 @@ export default function IntroScene({ onExitComplete }: IntroSceneProps) {
   const [isEnding, setIsEnding] = useState(false);
   const hasExited = useRef(false);
 
-  // ⏱️ Contador
+  const triggerEnding = () => {
+    setCount(0);
+    setIsEnding(true);
+  };
+
   useEffect(() => {
     if (isEnding) return;
 
-    if (count === 0) {
-      setIsEnding(true);
-      return;
-    }
+    const intervalId = window.setInterval(() => {
+      setCount((current) => {
+        if (current <= 1) {
+          window.clearInterval(intervalId);
+          window.setTimeout(() => setIsEnding(true), 0);
+          return 0;
+        }
 
-    const i = setInterval(() => {
-      setCount((c) => c - 1);
+        return current - 1;
+      });
     }, 1000);
 
-    return () => clearInterval(i);
-  }, [count, isEnding]);
+    return () => window.clearInterval(intervalId);
+  }, [isEnding]);
 
-  // 🎬 Salida (se ejecuta SOLO UNA VEZ)
   useEffect(() => {
     if (!isEnding || hasExited.current) return;
 
     hasExited.current = true;
 
-    const t = setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       onExitComplete();
     }, 1600);
 
-    return () => clearTimeout(t);
+    return () => window.clearTimeout(timeoutId);
   }, [isEnding, onExitComplete]);
 
   return (
@@ -46,8 +52,7 @@ export default function IntroScene({ onExitComplete }: IntroSceneProps) {
       className={`intro-root ${isEnding ? "introExit" : ""}`}
       onClick={() => {
         if (isEnding) return;
-        setCount(0);
-        setIsEnding(true);
+        triggerEnding();
       }}
     >
       <div className="content">

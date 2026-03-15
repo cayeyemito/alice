@@ -1,236 +1,613 @@
-  /* =========================
-    ESCENA
-  ========================= */
-  .story2-scene {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    overflow: hidden;
-  }
+/* =========================
+  BOOK INTRO
+========================= */
+.story2-scene,
+.journey-scene,
+.fall-scene {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+}
 
-  /* =========================
-    LUZ DE VELA
-  ========================= */
-  .candle-light {
-    position: absolute;
-    inset: -35%;
-    background: radial-gradient(
-      circle at 52% 48%,
-      rgba(255, 215, 160, 0.55) 0%,
-      rgba(255, 185, 95, 0.38) 16%,
-      rgba(140, 85, 35, 0.28) 28%,
-      rgba(0, 0, 0, 0.92) 42%,
-      #050402 60%
-    );
-    pointer-events: none;
-    z-index: 5;
-    filter: blur(6px);
-    animation: candleFlicker 7s ease-in-out infinite;
-  }
+.story2-scene {
+  perspective: 1600px;
+}
 
-  @keyframes candleFlicker {
-    0% {
-      opacity: 0.92;
-      transform: scale(1) translate(0, 0);
-    }
+.candle-light {
+  position: absolute;
+  inset: -35%;
+  background: radial-gradient(
+    circle at 52% 48%,
+    rgba(255, 215, 160, 0.55) 0%,
+    rgba(255, 185, 95, 0.38) 16%,
+    rgba(140, 85, 35, 0.28) 28%,
+    rgba(0, 0, 0, 0.92) 42%,
+    #050402 60%
+  );
+  pointer-events: none;
+  z-index: 5;
+  filter: blur(6px);
+  animation: candleFlicker 7s ease-in-out infinite;
+}
 
-    10% {
-      opacity: 0.98;
-      transform: scale(1.02) translate(-0.25%, -0.15%);
-    }
+@keyframes candleFlicker {
+  0% { opacity: 0.92; transform: scale(1) translate(0, 0); }
+  10% { opacity: 0.98; transform: scale(1.02) translate(-0.25%, -0.15%); }
+  22% { opacity: 0.88; transform: scale(0.99) translate(0.3%, 0.2%); }
+  34% { opacity: 1; transform: scale(1.04) translate(-0.35%, 0.15%); }
+  48% { opacity: 0.9; transform: scale(1) translate(0.15%, -0.1%); }
+  60% { opacity: 0.96; transform: scale(1.025) translate(-0.2%, 0.1%); }
+  74% { opacity: 0.88; transform: scale(0.985) translate(0.25%, -0.2%); }
+  88% { opacity: 0.97; transform: scale(1.015) translate(-0.15%, 0.1%); }
+  100% { opacity: 0.92; transform: scale(1) translate(0, 0); }
+}
 
-    22% {
-      opacity: 0.88;
-      transform: scale(0.99) translate(0.3%, 0.2%);
-    }
+.dark-veil {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 6;
+  pointer-events: none;
+  animation: darknessLift 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
-    34% {
-      opacity: 1;
-      transform: scale(1.04) translate(-0.35%, 0.15%);
-    }
+@keyframes darknessLift {
+  0% { opacity: 1; }
+  30% { opacity: 0.9; }
+  55% { opacity: 0.45; }
+  75% { opacity: 0.15; }
+  100% { opacity: 0; }
+}
 
-    48% {
-      opacity: 0.9;
-      transform: scale(1) translate(0.15%, -0.1%);
-    }
+.book-container {
+  position: absolute;
+  inset: 0;
+  padding: 1.5vh 1.5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 2;
+}
 
-    60% {
-      opacity: 0.96;
-      transform: scale(1.025) translate(-0.2%, 0.1%);
-    }
+.book-visual {
+  position: relative;
+  width: min(98vw, 1500px);
+  max-height: 96vh;
+  display: flex;
+  justify-content: center;
+}
 
-    74% {
-      opacity: 0.88;
-      transform: scale(0.985) translate(0.25%, -0.2%);
-    }
+.book-image-hotspot {
+  position: absolute;
+  top: 15%;
+  left: 16.2%;
+  width: 35%;
+  height: 72%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 24px;
+}
 
-    88% {
-      opacity: 0.97;
-      transform: scale(1.015) translate(-0.15%, 0.1%);
-    }
+.book-frame {
+  width: 100%;
+  max-height: 96vh;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.35s ease-in-out;
+  cursor: default;
+  user-select: none;
+}
 
-    100% {
-      opacity: 0.92;
-      transform: scale(1) translate(0, 0);
-    }
-  }
+.book-frame.clickable {
+  cursor: pointer;
+}
 
-  /* =========================
-    CONTENEDOR DEL LIBRO
-  ========================= */
-  .book-container {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    z-index: 2;
-  }
+.book-frame.closed,
+.book-frame.opening1,
+.book-frame.opening2,
+.book-frame.firstpage,
+.book-frame.opening3,
+.book-frame.open {
+  opacity: 1;
+}
 
-  .book-visual {
-    position: relative;
-    width: min(94vw, 1200px);
-    display: flex;
-    justify-content: center;
-  }
+.book-text-panel {
+  position: absolute;
+  top: 14.8%;
+  left: 57.8%;
+  width: 26.8%;
+  min-height: 44%;
+  max-height: 54%;
+  padding: 1.2rem 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #2b1b10;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 245, 220, 0.14) 0%,
+    rgba(255, 245, 220, 0.04) 100%
+  );
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
 
-  .dark-veil {
-    position: absolute;
-    inset: 0;
-    background: #000;
-    z-index: 6;
-    pointer-events: none; /* 👈 CLAVE */
-    animation: darknessLift 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
+.book-frame.firstpage ~ .book-text-panel,
+.book-frame.open ~ .book-text-panel {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  @keyframes darknessLift {
-    0% {
-      opacity: 1;
-    }
-    30% {
-      opacity: 0.9;
-    }
-    55% {
-      opacity: 0.45;
-    }
-    75% {
-      opacity: 0.15;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
+.book-text-title {
+  margin: 0;
+  font-size: clamp(1rem, 1.4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
 
-  /* =========================
-    IMAGEN DEL LIBRO
-  ========================= */
-  .book-frame {
-    width: 100%;
-    max-height: 92vh;
-    object-fit: contain;
-    opacity: 0;
-    transition: opacity 0.35s ease-in-out;
-    cursor: default;
-    user-select: none;
-  }
+.book-text-body {
+  margin: 0;
+  font-size: clamp(0.75rem, 1vw, 1.1rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
 
-  .book-frame.clickable {
-    cursor: pointer;
-  }
+.book-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 3.8vh;
+  transform: translateX(-50%);
+  z-index: 4;
+  color: rgba(255, 245, 215, 0.92);
+  font-size: clamp(0.82rem, 1.15vw, 1.05rem);
+  letter-spacing: 0.015em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+  user-select: none;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+}
 
-  /* Visible (ESTO ES LO IMPORTANTE) */
-  .book-frame.closed,
-  .book-frame.opening1,
-  .book-frame.opening2,
-  .book-frame.firstpage,
-  .book-frame.opening3,
-  .book-frame.open {
-    opacity: 1;
+.page-turn-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  background: #000;
+}
+
+.page-turn-sheet {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+
+/* =========================
+  FALL
+========================= */
+.fall-scene {
+  background-color: #000;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fall-scene-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(12, 18, 28, 0.06), rgba(0, 0, 0, 0.68) 82%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.42));
+}
+
+.fall-alice {
+  position: absolute;
+  top: 6vh;
+  left: 50%;
+  width: min(18vw, 180px);
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.fall-prop {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0.95;
+}
+
+.fall-prop-cards {
+  top: 18vh;
+  left: 14vw;
+  width: min(16vw, 180px);
+}
+
+.fall-prop-watch {
+  top: 58vh;
+  right: 12vw;
+  width: min(12vw, 130px);
+}
+
+.fall-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 4vh;
+  transform: translateX(-50%);
+  z-index: 3;
+  max-width: min(90vw, 680px);
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(7, 10, 18, 0.48);
+  color: rgba(255, 247, 237, 0.92);
+  font-size: clamp(0.88rem, 1.2vw, 1rem);
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.fall-progress {
+  position: absolute;
+  top: 12vh;
+  right: 2.6vw;
+  bottom: 12vh;
+  width: 6px;
+  z-index: 3;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.fall-progress span {
+  position: absolute;
+  inset: auto 0 0;
+  height: 100%;
+  transform-origin: bottom center;
+  background: linear-gradient(180deg, rgba(255, 219, 150, 0.45), rgba(255, 201, 91, 0.92));
+}
+
+/* =========================
+  JOURNEY
+========================= */
+.journey-scene {
+  background:
+    radial-gradient(circle at top, rgba(38, 58, 104, 0.28), transparent 44%),
+    linear-gradient(180deg, #02050a, #04101a 55%, #010206 100%);
+  color: #fff8ef;
+}
+
+.journey-scroll-shell {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y proximity;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.journey-scroll-shell::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.journey-scroll-track {
+  position: relative;
+}
+
+.journey-section {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  scroll-snap-align: start;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.journey-media,
+.journey-media-image {
+  position: absolute;
+  inset: 0;
+}
+
+.journey-media {
+  z-index: 1;
+  will-change: transform;
+}
+
+.journey-audio-button {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(8, 12, 22, 0.52);
+  color: #fff7ee;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.journey-audio-button-right {
+  left: auto;
+  right: 24px;
+}
+
+.journey-audio-button.is-playing {
+  background: rgba(188, 137, 77, 0.72);
+}
+
+.journey-audio-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.journey-audio-label {
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.journey-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 7, 14, 0.08), rgba(4, 7, 14, 0.34) 60%, rgba(4, 7, 14, 0.72)),
+    linear-gradient(90deg, rgba(4, 7, 14, 0.4), rgba(4, 7, 14, 0.08) 40%, rgba(4, 7, 14, 0.6));
+}
+
+.journey-media-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journey-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fog-layer {
+  position: absolute;
+  inset: -6%;
+  background:
+    radial-gradient(circle at 22% 30%, rgba(220, 233, 255, 0.1), transparent 18%),
+    radial-gradient(circle at 72% 28%, rgba(255, 255, 255, 0.06), transparent 18%);
+  opacity: 0.6;
+  animation: driftFog 18s linear infinite;
+}
+
+@keyframes driftFog {
+  from { transform: translate3d(-3%, 0, 0); }
+  50% { transform: translate3d(2%, -1%, 0); }
+  to { transform: translate3d(5%, 0, 0); }
+}
+
+.journey-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  width: min(50vw, 760px);
+  padding: 10vh 4vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  color: #fff9f0;
+  background:
+    linear-gradient(180deg, rgba(11, 16, 28, 0.5), rgba(11, 16, 28, 0.38)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035), transparent);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.05);
+  will-change: transform, opacity;
+}
+
+.journey-panel-left {
+  left: 0;
+  right: auto;
+  background:
+    linear-gradient(180deg, rgba(11, 16, 28, 0.5), rgba(11, 16, 28, 0.38)),
+    linear-gradient(270deg, rgba(255, 255, 255, 0.035), transparent);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.journey-chapter {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.journey-title {
+  margin: 0;
+  font-family: var(--font-waltograph), cursive;
+  font-size: clamp(2.4rem, 5vw, 5.8rem);
+  line-height: 0.94;
+  text-wrap: balance;
+}
+
+.journey-description {
+  margin: 0;
+  font-size: clamp(1rem, 1.28vw, 1.22rem);
+  line-height: 1.7;
+  color: rgba(255, 248, 239, 0.92);
+}
+
+/* =========================
+  RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  .book-image-hotspot {
+    top: 15.5%;
+    left: 16%;
+    width: 35%;
+    height: 70%;
   }
 
   .book-text-panel {
-    position: absolute;
-    top: 20.5%;
-    left: 56%;
-    width: 33%;
-    min-height: 48%;
-    max-height: 58%;
-    padding: 18px 18px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    color: #2b1b10;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 245, 220, 0.12) 0%,
-      rgba(255, 245, 220, 0.04) 100%
-    );
-    border-radius: 8px;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-    pointer-events: none;
+    top: 16.4%;
+    left: 57.3%;
+    width: 28.4%;
+    min-height: 43%;
+    padding: 12px;
+    gap: 8px;
   }
 
-  .book-frame.firstpage ~ .book-text-panel,
-  .book-frame.opening3 ~ .book-text-panel,
-  .book-frame.open ~ .book-text-panel {
-    opacity: 1;
-    transform: translateY(0);
+  .journey-panel {
+    width: min(56vw, 760px);
+    padding: 9vh 4vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .book-container {
+    gap: 8px;
   }
 
-  .book-text-title {
-    margin: 0;
-    font-size: clamp(1rem, 1.4vw, 1.5rem);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+  .book-visual {
+    width: min(100vw, 980px);
+  }
+
+  .book-image-hotspot {
+    top: 16%;
+    left: 15.5%;
+    width: 35.5%;
+    height: 68%;
+  }
+
+  .book-text-panel {
+    top: 17%;
+    left: 57%;
+    width: 28.8%;
+    min-height: 38%;
+    max-height: 52%;
+    padding: 9px;
+  }
+
+  .journey-panel {
+    width: 100%;
+    top: auto;
+    min-height: 42vh;
+    padding: 24px 24px 34px;
+    justify-content: flex-end;
+    background: linear-gradient(180deg, rgba(11, 16, 28, 0), rgba(11, 16, 28, 0.64) 34%, rgba(11, 16, 28, 0.78));
+    box-shadow: none;
+  }
+
+  .journey-panel-left {
+    left: 0;
+    right: 0;
+  }
+
+  .journey-title {
+    font-size: clamp(2.2rem, 10vw, 4.4rem);
+  }
+
+  .journey-audio-button {
+    top: 16px;
+    left: 16px;
+    padding: 9px 12px;
+  }
+
+  .journey-audio-button-right {
+    left: auto;
+    right: 16px;
+  }
+
+  .fall-alice {
+    width: min(28vw, 150px);
+  }
+
+  .fall-prop-cards {
+    top: 16vh;
+    left: 8vw;
+    width: min(22vw, 150px);
+  }
+
+  .fall-prop-watch {
+    top: 62vh;
+    right: 8vw;
+    width: min(16vw, 110px);
+  }
+
+  .fall-hint {
+    bottom: 3vh;
+    border-radius: 24px;
+    padding: 0.85rem 1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .book-hint {
+    bottom: 2.4vh;
+    max-width: 88vw;
+    white-space: normal;
+  }
+
+  .book-text-panel {
+    top: auto;
+    left: 10%;
+    right: 10%;
+    bottom: 13%;
+    width: auto;
+    min-height: auto;
+    max-height: none;
+    background: rgba(255, 244, 220, 0.82);
   }
 
   .book-text-body {
-    margin: 0;
-    font-size: clamp(0.75rem, 1vw, 1.1rem);
-    line-height: 1.45;
-    text-wrap: pretty;
+    font-size: 0.88rem;
   }
 
-  .book-hint {
-    color: rgba(255, 245, 215, 0.92);
-    font-size: clamp(0.82rem, 1.15vw, 1.05rem);
-    letter-spacing: 0.015em;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
-    user-select: none;
-    pointer-events: none;
+  .journey-panel {
+    padding: 20px 18px 28px;
+    gap: 14px;
   }
 
-  @media (max-width: 900px) {
-    .book-text-panel {
-      top: 22%;
-      left: 55%;
-      width: 36%;
-      min-height: 44%;
-      padding: 12px;
-      gap: 8px;
-    }
+  .journey-chapter {
+    font-size: 0.72rem;
   }
 
-  @media (max-width: 640px) {
-    .book-container {
-      gap: 8px;
-    }
-
-    .book-visual {
-      width: min(98vw, 800px);
-    }
-
-    .book-text-panel {
-      top: 24%;
-      left: 54%;
-      width: 38%;
-      min-height: 40%;
-      max-height: 52%;
-      padding: 9px;
-    }
+  .journey-description {
+    font-size: 0.96rem;
   }
+
+  .fall-progress {
+    right: 4vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog-layer {
+    animation: none;
+  }
+}
